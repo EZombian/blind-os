@@ -1,2 +1,1 @@
-#BlindOS
-A console OS!
+
