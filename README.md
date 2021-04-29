@@ -1,2 +1,2 @@
-# blind-os
-A console OS
+#BlindOS
+A console OS!
