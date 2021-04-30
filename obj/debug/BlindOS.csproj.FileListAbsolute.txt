@@ -1,7 +1,0 @@
-C:\Users\embeb\Desktop\BlindOS\bin\Debug\BlindOS.exe.config
-C:\Users\embeb\Desktop\BlindOS\bin\Debug\BlindOS.exe
-C:\Users\embeb\Desktop\BlindOS\bin\Debug\BlindOS.pdb
-C:\Users\embeb\Desktop\BlindOS\obj\Debug\BlindOS.csprojAssemblyReference.cache
-C:\Users\embeb\Desktop\BlindOS\obj\Debug\BlindOS.csproj.CoreCompileInputs.cache
-C:\Users\embeb\Desktop\BlindOS\obj\Debug\BlindOS.exe
-C:\Users\embeb\Desktop\BlindOS\obj\Debug\BlindOS.pdb
