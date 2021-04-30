@@ -247,7 +247,7 @@ namespace Application
                                 break;
                             case "write":
                                 var file = sw.WriteText();
-                                sw.Stream(splittedCommand4[1], file.ToArray()); // FIXME: IndexOutOfRangeException
+                                sw.Stream(splittedCommand4[1], file.ToArray());
                                 break;
                             case "exit":
                                 mode = 1;
@@ -287,61 +287,68 @@ namespace Application
                         break;
                     case 6: // gVI
                         {
-                            // TODO: przetłumacz na język angielski
                             Random random = new Random();
 
-                            Console.WriteLine("gVI v2.11");
-                            Console.WriteLine("Wpisz \"index\" aby poznać listę komend");
+                            Console.WriteLine("gVI by GameEngine");
+                            Console.WriteLine("Type \"index\" to get command list");
                             Console.Write("> $");
                             string CMD = Console.ReadLine();
 
                         EndGame:
-                            Console.WriteLine("\nKomendy startowe (do stworzenia areny):");
-                            Console.WriteLine("> $create <jednowyrazowa nazwa areny> - tworzy arenę " + BlindOS.Environment.GameEngine.GVI.Settings.MAX_X + " x " + BlindOS.Environment.GameEngine.GVI.Settings.MAX_Y);
-                            Console.WriteLine("> $join <nazwa areny> - dołącz do areny");
+                            Console.WriteLine("\nStart commands:");
+                            Console.WriteLine("> $create <name> - create area " + BlindOS.Environment.GameEngine.GVI.Settings.MAX_X + " x " + BlindOS.Environment.GameEngine.GVI.Settings.MAX_Y);
+                            Console.WriteLine("> $join <area name> - join area");
 
-                            Console.WriteLine("\nKomendy informacyjne (do uzyskania informacji):");
-                            Console.WriteLine("> $pw - informacje o graczach");
-                            Console.WriteLine("> $ps - rozpiska wszystcich broni (z wyłączeniem stworzonych przez użytkownika)");
-                            Console.WriteLine("> $pg - rozpiska wszystcich bloków");
-                            Console.WriteLine("> $sg - wydrukuj arenę wraz z lokalizacją gracza i bota");
+                            Console.WriteLine("\nWhile-game info commands:");
+                            Console.WriteLine("> $player - player and bot info");
+                            Console.WriteLine("> $weapon - info about weapons");
+                            Console.WriteLine("> $blocks - block and their icon list");
+                            Console.WriteLine("> $area - print area with player and bot pos");
 
-                            Console.WriteLine("\nKomendy akcji:");
-                            Console.WriteLine("> $w - idź do przodu");
-                            Console.WriteLine("> $s - idź do tyłu");
-                            Console.WriteLine("> $a - idź w lewo");
-                            Console.WriteLine("> $d - idź w prawo");
-                            Console.WriteLine("> $bb - zniszcz blok (zastępuje go \"USB\", czyli blokiem użytkowym), a ciebie prenosi kratkę w górę oraz zniszczony blok dodaje do ekwipunku");
-                            Console.WriteLine("> $rb <skrót> <kierunek (w / s / a / d> - zamień blok na ... ode mnie na ... i dodaj do ekwipunku blok zamieniony");
-                            Console.WriteLine("> $select <Miecz / Łuk> - wybierz broń");
-                            Console.WriteLine("> $attack - atakuj (działa tylko gdy obaj gracze stoją na tym samym bloku)");
-                            Console.WriteLine("> $nick <nowy jednowyrazowy nick> - zmień nick");
-                            Console.WriteLine("> $exit - opuść grę");
+                            Console.WriteLine("\nWhile-game action commands:");
+                            Console.WriteLine("> $w - go forward");
+                            Console.WriteLine("> $s - go back");
+                            Console.WriteLine("> $a - go left");
+                            Console.WriteLine("> $d - go right");
+                            Console.WriteLine("> $bb - break block");
+                            Console.WriteLine("> $rb <shortcut> <direction (w / s / a / d> - replace block");
+                            Console.WriteLine("> $select <Sword / Bow> - select weapon");
+                            Console.WriteLine("> $attack - attack (only works when the player and the bot are on the same field)");
+                            Console.WriteLine("> $nick <new nick> - change nickname");
+                            Console.WriteLine("> $exit - exit the game");
 
+                        IncompleteCommand1:
                             Console.Write("\n> $");
                             CMD = Console.ReadLine();
                             string[] cmdSplit = CMD.Split(new char[] { ' ' });
 
-                            Console.WriteLine("\nUtworzono arenę. Wpisz \"$join " + cmdSplit[1] + "\" aby dołączyć\n");
-
+                            Console.WriteLine("\nArea successfully created. Type \"$join " + cmdSplit[1] + "\" to join area\n");
                             BlindOS.Environment.GameEngine.GVI.Area board = new BlindOS.Environment.GameEngine.GVI.Area();
-                            board.name = cmdSplit[1];
-
-                        UndefinedArea:
-                            Console.Write("> $");
-                            CMD = Console.ReadLine();
-                            cmdSplit = CMD.Split(new char[] { ' ' });
-
-                            if (cmdSplit[1] == board.name)
+                            try
                             {
+                                board.name = cmdSplit[1];
+
+                            UndefinedArea:
+                                Console.Write("> $");
+                                CMD = Console.ReadLine();
+                                cmdSplit = CMD.Split(new char[] { ' ' });
+
+                                if (cmdSplit[1] == board.name)
+                                {
+                                }
+                                else
+                                {
+                                    Console.WriteLine("\n" + cmdSplit[1] + " is not a valid arena name!\n");
+                                    goto UndefinedArea;
+                                }
                             }
-                            else
+                            catch (IndexOutOfRangeException)
                             {
-                                Console.WriteLine("\n" + cmdSplit[1] + " nie jest prawidłową nazwą areny!\n");
-                                goto UndefinedArea;
+                                Console.WriteLine("\nERR: Incomplete command!\n");
+                                goto IncompleteCommand1;
                             }
 
-                            Console.WriteLine("\nDołączono do areny!\n");
+                            Console.WriteLine("\nSuccessfully joined to area!\n");
 
                             BlindOS.Environment.GameEngine.GVI.Entity player = new BlindOS.Environment.GameEngine.GVI.Entity();
                             BlindOS.Environment.GameEngine.GVI.Entity bot = new BlindOS.Environment.GameEngine.GVI.Entity();
@@ -349,21 +356,20 @@ namespace Application
                             BlindOS.Environment.GameEngine.GVI.Weapon bow = new BlindOS.Environment.GameEngine.GVI.Weapon();
                             sword.damage = 6;
                             sword.durability = 20;
-                            sword.name = "Miecz";
+                            sword.name = "Sword";
                             sword.required[0] = BlindOS.Environment.GameEngine.GVI.Stuff.blocksFullName[0];
                             sword.required[1] = BlindOS.Environment.GameEngine.GVI.Stuff.blocksFullName[0];
                             sword.required[2] = BlindOS.Environment.GameEngine.GVI.Stuff.blocksFullName[2];
 
                             bow.damage = 5;
                             bow.durability = 24;
-                            bow.name = "Łuk";
+                            bow.name = "Bow";
                             bow.required[0] = BlindOS.Environment.GameEngine.GVI.Stuff.blocksFullName[0];
                             bow.required[1] = BlindOS.Environment.GameEngine.GVI.Stuff.blocksFullName[2];
                             bow.required[2] = BlindOS.Environment.GameEngine.GVI.Stuff.blocksFullName[2];
 
                             int z = 0;
-                            int index = 0;
-
+                            int index;
                             while (z < BlindOS.Environment.GameEngine.GVI.Settings.MAX_X)
                             {
                                 for (int i = 0; i < BlindOS.Environment.GameEngine.GVI.Settings.MAX_Y; i++)
@@ -377,7 +383,7 @@ namespace Application
                                 z++;
                             }
 
-                            Console.WriteLine("\n^^^ Oto wasza arena. Za chwilę zostaniesz wyrzucony w jej losowy punkt! ^^^\n");
+                            Console.WriteLine("\n^^^ Here is your arena. In a moment you will be thrown at its random point! ^^^\n");
 
                         InvalidSpawn:
                             player.X = random.Next(BlindOS.Environment.GameEngine.GVI.Settings.MAX_X) + 1;
@@ -393,12 +399,12 @@ namespace Application
                             board.terrain[player.X - 1, player.Y - 1] = "_Y_";
                             board.terrain[bot.X - 1, bot.Y - 1] = "_B_";
 
-                            Console.WriteLine("Oto wasze koordynaty:\n");
-                            Console.WriteLine("Ty: X: " + player.X + "; Y: " + player.Y);
+                            Console.WriteLine("It's your coordinates:\n");
+                            Console.WriteLine("You: X: " + player.X + "; Y: " + player.Y);
                             Console.WriteLine("Bot: X: " + bot.X + "; Y: " + bot.Y);
-                            Console.WriteLine("\nPora rozpocząć zabawę!\n");
+                            Console.WriteLine("\nSTART!\n");
 
-                            Console.WriteLine("Twój ruch:\n");
+                            Console.WriteLine("Your Turn!\n");
                             while (true)
                             {
                                 Console.Write("> $");
@@ -410,54 +416,54 @@ namespace Application
                                 {
                                     case "exit":
                                         goto BlindOS;
-                                    case "pw":
+                                    case "player":
                                         try
                                         {
-                                            Console.WriteLine("INFORMACJE:\n");
+                                            Console.WriteLine("INFO: \n");
                                             Console.WriteLine(player.nick + ":");
-                                            Console.WriteLine("Koordynaty (X): " + player.X);
-                                            Console.WriteLine("Koordynaty (Y): " + player.Y);
+                                            Console.WriteLine("Coordinates (X):" + player.X);
+                                            Console.WriteLine("Coordinates (Y):" + player.Y);
                                             float hpFromMax = player.hp / BlindOS.Environment.GameEngine.GVI.Settings.MAX_HP * 100;
-                                            Console.WriteLine("Punkty życia: " + player.hp + " / " + BlindOS.Environment.GameEngine.GVI.Settings.MAX_HP + " (" + hpFromMax + "% max. wartości)");
-                                            Console.WriteLine("Stoi na: " + board.terrainFull[player.X - 1, player.Y - 1]);
-                                            Console.WriteLine("Posiadanego tuff'u: " + player.tuff);
-                                            Console.WriteLine("Posiadanego grieef'u: " + player.grieef);
-                                            Console.WriteLine("Posiadanego spleef'u: " + player.spleef);
+                                            Console.WriteLine("Health points:" + player.hp + "/" + BlindOS.Environment.GameEngine.GVI.Settings.MAX_HP + "(" + hpFromMax + "% max. Values)");
+                                            Console.WriteLine("Standing on:" + board.terrainFull[player.X - 1, player.Y - 1]);
+                                            Console.WriteLine("Owned tuff:" + player.tuff);
+                                            Console.WriteLine("Grieef you have:" + player.grieef);
+                                            Console.WriteLine("Spleef you have:" + player.spleef);
 
                                             Console.WriteLine("\nBot:");
-                                            Console.WriteLine("Koordynaty (X): " + bot.X);
-                                            Console.WriteLine("Koordynaty (Y): " + bot.Y);
+                                            Console.WriteLine("(X) coordinates:" + bot.X);
+                                            Console.WriteLine("Coordinates (Y):" + bot.Y);
                                             float hpFromMax2 = bot.hp / BlindOS.Environment.GameEngine.GVI.Settings.MAX_HP * 100;
-                                            Console.WriteLine("Punkty życia: " + bot.hp + " / " + BlindOS.Environment.GameEngine.GVI.Settings.MAX_HP + " (" + hpFromMax2 + "% max. wartości)");
-                                            Console.WriteLine("Stoi na: " + board.terrainFull[bot.X - 1, bot.Y - 1]);
+                                            Console.WriteLine("Health points:" + bot.hp + "/" + BlindOS.Environment.GameEngine.GVI.Settings.MAX_HP + "(" + hpFromMax2 + "% max. Values)");
+                                            Console.WriteLine("Stands on:" + board.terrainFull[bot.X - 1, bot.Y - 1]);
                                         }
                                         catch (IndexOutOfRangeException)
-                                        { // gdy wyrzucono bota poza arenę...
-                                            Console.WriteLine("Gracz " + player.nick + " wygrał z botem, gdyż pozbawił go życia wyrzucając go poza arenę");
+                                        { // when the bot was thrown out of the arena ...
+                                            Console.WriteLine("Player" + player.nick + "won against the bot because it killed it throwing it outside the arena");
                                             goto EndGame;
                                         }
                                         break;
 
-                                    case "ps":
+                                    case "weapon":
                                         Console.WriteLine(sword.name + ":");
-                                        Console.WriteLine("Zadawane obrażenia: " + sword.damage);
-                                        Console.WriteLine("Użyć: " + sword.durability);
-                                        Console.WriteLine("Niezbędne przedmioty: " + sword.required[0] + ", " + sword.required[1] + ", " + sword.required[2]);
+                                        Console.WriteLine("Damage dealt:" + sword.damage);
+                                        Console.WriteLine("Durability:" + sword.durability);
+                                        Console.WriteLine("Necessary items:" + sword.required[0] + "," + sword.required[1] + "," + sword.required[2]);
                                         Console.WriteLine("\n" + bow.name + ":");
-                                        Console.WriteLine("Zadawane obrażenia: " + bow.damage);
-                                        Console.WriteLine("Użyć: " + bow.durability);
-                                        Console.WriteLine("Niezbędne przedmioty: " + bow.required[0] + ", " + bow.required[1] + ", " + bow.required[2]);
+                                        Console.WriteLine("Damage dealt:" + bow.damage);
+                                        Console.WriteLine("Durability:" + bow.durability);
+                                        Console.WriteLine("Necessary items:" + bow.required[0] + "," + bow.required[1] + "," + bow.required[2]);
                                         break;
 
-                                    case "pg":
-                                        Console.WriteLine("Bloki:");
+                                    case "blocks":
+                                        Console.WriteLine("Blocks:");
                                         for (int i = 0; i < BlindOS.Environment.GameEngine.GVI.Stuff.blocksFullName.Length; i++)
                                         {
                                             Console.WriteLine(BlindOS.Environment.GameEngine.GVI.Stuff.blocksSimpleIcons[i] + " - " + BlindOS.Environment.GameEngine.GVI.Stuff.blocksFullName[i]);
                                         }
                                         break;
 
-                                    case "sg":
+                                    case "area":
                                         z = 0;
                                         index = 0;
 
@@ -514,7 +520,7 @@ namespace Application
                                             ++player.spleef;
                                         }
 
-                                        board.terrainFull[player.X - 1, player.Y - 1] = "Blok użytkowy";
+                                        board.terrainFull[player.X - 1, player.Y - 1] = "Using block";
                                         board.terrain[player.X - 1, player.Y - 1] = "   ";
                                         player.X--;
                                         board.terrain[player.X - 1, player.Y - 1] = "_Y_";
@@ -526,16 +532,16 @@ namespace Application
                                             case "TUF":
                                                 if (player.tuff <= 0)
                                                 {
-                                                    Console.WriteLine("Nie masz wystarczającej ilości tuff'u w ekwipunku");
-                                                    Console.WriteLine("Ilość tuffu sprawdzisz pod $pw");
+                                                    Console.WriteLine("You don't have enough tuff in your inventory");
+                                                    Console.WriteLine("You will check the amount of tuff under $ pw");
                                                 }
 
                                                 else
                                                 {
                                                     switch (cmdSplit[2])
                                                     {
-                                                        case "w":
-                                                            if (board.terrainFull[(player.X - 1) - 1, (player.Y - 1)] == "Blok użytkowy")
+                                                        case "in":
+                                                            if (board.terrainFull[(player.X - 1) - 1, (player.Y - 1)] == "Utility Block")
                                                             {
                                                                 board.terrainFull[(player.X - 1) - 1, (player.Y - 1)] = "Tuff";
                                                                 board.terrain[(player.X - 1) - 1, (player.Y - 1)] = "TUF";
@@ -560,12 +566,12 @@ namespace Application
 
                                                             else if (board.terrainFull[(player.X - 1) - 1, (player.Y - 1)] == "Tuff")
                                                             {
-                                                                Console.WriteLine("Wykonywana operacja jest bezsensowna. Podmieniasz TUFF na TUFF");
+                                                                Console.WriteLine("The operation you are performing is meaningless. You are replacing TUFF with TUFF");
                                                             }
                                                             break;
 
                                                         case "s":
-                                                            if (board.terrainFull[(player.X - 1) + 1, (player.Y - 1)] == "Blok użytkowy")
+                                                            if (board.terrainFull[(player.X - 1) + 1, (player.Y - 1)] == "Utility Block")
                                                             {
                                                                 board.terrainFull[(player.X - 1) + 1, (player.Y - 1)] = "Tuff";
                                                                 board.terrain[(player.X - 1) + 1, (player.Y - 1)] = "TUF";
@@ -590,12 +596,12 @@ namespace Application
 
                                                             else if (board.terrainFull[(player.X - 1) + 1, (player.Y - 1)] == "Tuff")
                                                             {
-                                                                Console.WriteLine("Wykonywana operacja jest bezsensowna. Podmieniasz TUFF na TUFF");
+                                                                Console.WriteLine("The operation you are performing is meaningless. You are replacing TUFF with TUFF");
                                                             }
                                                             break;
 
                                                         case "a":
-                                                            if (board.terrainFull[(player.X - 1), (player.Y - 1) - 1] == "Blok użytkowy")
+                                                            if (board.terrainFull[(player.X - 1), (player.Y - 1) - 1] == "Utility Block")
                                                             {
                                                                 board.terrainFull[(player.X - 1), (player.Y - 1) - 1] = "Tuff";
                                                                 board.terrain[(player.X - 1), (player.Y - 1) - 1] = "TUF";
@@ -620,12 +626,12 @@ namespace Application
 
                                                             else if (board.terrainFull[(player.X - 1), (player.Y - 1) - 1] == "Tuff")
                                                             {
-                                                                Console.WriteLine("Wykonywana operacja jest bezsensowna. Podmieniasz TUFF na TUFF");
+                                                                Console.WriteLine("The operation you are performing is meaningless. You are replacing TUFF with TUFF");
                                                             }
                                                             break;
 
                                                         case "d":
-                                                            if (board.terrainFull[(player.X - 1), (player.Y - 1) + 1] == "Blok użytkowy")
+                                                            if (board.terrainFull[(player.X - 1), (player.Y - 1) + 1] == "Utility Block")
                                                             {
                                                                 board.terrainFull[(player.X - 1), (player.Y - 1) + 1] = "Tuff";
                                                                 board.terrain[(player.X - 1), (player.Y - 1) + 1] = "TUF";
@@ -650,7 +656,7 @@ namespace Application
 
                                                             else if (board.terrainFull[(player.X - 1), (player.Y - 1) + 1] == "Tuff")
                                                             {
-                                                                Console.WriteLine("Wykonywana operacja jest bezsensowna. Podmieniasz TUFF na TUFF");
+                                                                Console.WriteLine("The operation you are performing is meaningless. You are replacing TUFF with TUFF");
                                                             }
                                                             break;
                                                     }
@@ -661,16 +667,16 @@ namespace Application
                                             case "GRF":
                                                 if (player.grieef <= 0)
                                                 {
-                                                    Console.WriteLine("Nie masz wystarczającej ilości grieef'u w ekwipunku");
-                                                    Console.WriteLine("Ilość grieefu sprawdzisz pod $pw");
+                                                    Console.WriteLine("You don't have enough grieef in your inventory");
+                                                    Console.WriteLine("You can check the number of grieefs under $ pw");
                                                 }
 
                                                 else
                                                 {
                                                     switch (cmdSplit[2])
                                                     {
-                                                        case "w":
-                                                            if (board.terrainFull[(player.X - 1) - 1, (player.Y - 1)] == "Blok użytkowy")
+                                                        case "in":
+                                                            if (board.terrainFull[(player.X - 1) - 1, (player.Y - 1)] == "Utility Block")
                                                             {
                                                                 board.terrainFull[(player.X - 1) - 1, (player.Y - 1)] = "Grieef";
                                                                 board.terrain[(player.X - 1) - 1, (player.Y - 1)] = "GRF";
@@ -679,7 +685,7 @@ namespace Application
 
                                                             else if (board.terrainFull[(player.X - 1) - 1, (player.Y - 1)] == "Grieef")
                                                             {
-                                                                Console.WriteLine("Wykonywana operacja jest bezsensowna. Podmieniasz GRIEEF na GREEF");
+                                                                Console.WriteLine("The operation being performed is pointless. You are replacing GRIEEF with GREEF");
                                                             }
 
                                                             else if (board.terrainFull[(player.X - 1) - 1, (player.Y - 1)] == "Spleef")
@@ -700,7 +706,7 @@ namespace Application
                                                             break;
 
                                                         case "s":
-                                                            if (board.terrainFull[(player.X - 1) + 1, (player.Y - 1)] == "Blok użytkowy")
+                                                            if (board.terrainFull[(player.X - 1) + 1, (player.Y - 1)] == "Utility Block")
                                                             {
                                                                 board.terrainFull[(player.X - 1) + 1, (player.Y - 1)] = "Tuff";
                                                                 board.terrain[(player.X - 1) + 1, (player.Y - 1)] = "TUF";
@@ -719,18 +725,17 @@ namespace Application
                                                             {
                                                                 board.terrainFull[(player.X - 1) + 1, (player.Y - 1)] = "Tuff";
                                                                 board.terrain[(player.X - 1) + 1, (player.Y - 1)] = "TUF";
-                                                                player.tuff--;
-                                                                player.spleef++;
+                                                                player.tuff--; player.spleef++;
                                                             }
 
                                                             else if (board.terrainFull[(player.X - 1) + 1, (player.Y - 1)] == "Tuff")
                                                             {
-                                                                Console.WriteLine("Wykonywana operacja jest bezsensowna. Podmieniasz TUFF na TUFF");
+                                                                Console.WriteLine("The operation you are performing is meaningless. You are replacing TUFF with TUFF");
                                                             }
                                                             break;
 
                                                         case "a":
-                                                            if (board.terrainFull[(player.X - 1), (player.Y - 1) - 1] == "Blok użytkowy")
+                                                            if (board.terrainFull[(player.X - 1), (player.Y - 1) - 1] == "Utility Block")
                                                             {
                                                                 board.terrainFull[(player.X - 1), (player.Y - 1) - 1] = "Tuff";
                                                                 board.terrain[(player.X - 1), (player.Y - 1) - 1] = "TUF";
@@ -755,12 +760,12 @@ namespace Application
 
                                                             else if (board.terrainFull[(player.X - 1), (player.Y - 1) - 1] == "Tuff")
                                                             {
-                                                                Console.WriteLine("Wykonywana operacja jest bezsensowna. Podmieniasz TUFF na TUFF");
+                                                                Console.WriteLine("The operation you are performing is meaningless. You are replacing TUFF with TUFF");
                                                             }
                                                             break;
 
                                                         case "d":
-                                                            if (board.terrainFull[(player.X - 1), (player.Y - 1) + 1] == "Blok użytkowy")
+                                                            if (board.terrainFull[(player.X - 1), (player.Y - 1) + 1] == "Utility Block")
                                                             {
                                                                 board.terrainFull[(player.X - 1), (player.Y - 1) + 1] = "Tuff";
                                                                 board.terrain[(player.X - 1), (player.Y - 1) + 1] = "TUF";
@@ -779,13 +784,12 @@ namespace Application
                                                             {
                                                                 board.terrainFull[(player.X - 1), (player.Y - 1) + 1] = "Tuff";
                                                                 board.terrain[(player.X - 1), (player.Y - 1) + 1] = "TUF";
-                                                                player.tuff--;
-                                                                player.spleef++;
+                                                                player.tuff--; player.spleef++;
                                                             }
 
                                                             else if (board.terrainFull[(player.X - 1), (player.Y - 1) + 1] == "Tuff")
                                                             {
-                                                                Console.WriteLine("Wykonywana operacja jest bezsensowna. Podmieniasz TUFF na TUFF");
+                                                                Console.WriteLine("The operation you are performing is meaningless. You are replacing TUFF with TUFF");
                                                             }
                                                             break;
                                                     }
@@ -798,14 +802,14 @@ namespace Application
                                     case "select":
                                         switch (cmdSplit[1])
                                         {
-                                            case "Miecz":
-                                                player.selectedItem = "Miecz";
-                                                Console.WriteLine("Wybrano przedmiot: Miecz");
+                                            case "Sword":
+                                                player.selectedItem = "Sword";
+                                                Console.WriteLine("Item Selected: Sword");
                                                 break;
 
-                                            case "Łuk":
-                                                player.selectedItem = "Łuk";
-                                                Console.WriteLine("Wybrano przedmiot: Łuk");
+                                            case "Bow":
+                                                player.selectedItem = "Bow";
+                                                Console.WriteLine("Item Selected: Bow");
                                                 break;
                                         }
                                         break;
@@ -813,7 +817,7 @@ namespace Application
                                     case "attack":
                                         if (player.X == bot.X && player.Y == bot.Y)
                                         {
-                                            if (player.selectedItem == "Miecz")
+                                            if (player.selectedItem == "Sword")
                                             {
                                                 int compass = random.Next(1, 5);
 
@@ -840,7 +844,7 @@ namespace Application
                                                 sword.damage -= 0.1F;
                                             }
 
-                                            else if (player.selectedItem == "Łuk")
+                                            else if (player.selectedItem == "Arc")
                                             {
                                                 int compass = random.Next(1, 5);
 
@@ -887,19 +891,19 @@ namespace Application
 
                                 if (bot.hp <= 0)
                                 {
-                                    Console.WriteLine("Gracz " + player.nick + " wygrał z botem, gdyż pozbawił go życia zabijając go");
+                                    Console.WriteLine("Player" + player.nick + "won against the bot because it killed it by killing it");
                                     goto EndGame;
                                 }
 
-                                if (board.terrainFull[bot.X - 1, bot.Y - 1] == "Blok użytkowy")
+                                if (board.terrainFull[bot.X - 1, bot.Y - 1] == "Utility Block")
                                 {
-                                    Console.WriteLine("Gracz " + player.nick + " wygrał z botem, gdyż pozbawił go życia wyrzucając go poza arenę");
+                                    Console.WriteLine("Player" + player.nick + "won against the bot because it killed it throwing it outside the arena");
                                     goto EndGame;
                                 }
 
-                                if (board.terrainFull[player.X - 1, player.Y - 1] == "Blok użytkowy")
+                                if (board.terrainFull[player.X - 1, player.Y - 1] == "Utility Block")
                                 {
-                                    Console.WriteLine("Gracz " + player.nick + " wypadł poza arenę");
+                                    Console.WriteLine("Player" + player.nick + "fell out of the arena");
                                     goto EndGame;
                                 }
                             }
@@ -1024,7 +1028,7 @@ namespace BlindOS
                 {
                     public string name = "";
 
-                    public string[,] terrain = new string[BlindOS.Environment.GameEngine.GVI.Settings.MAX_X, BlindOS.Environment.GameEngine.GVI.Settings.MAX_Y] {
+                    public string[,] terrain = new string[Settings.MAX_X, BlindOS.Environment.GameEngine.GVI.Settings.MAX_Y] {
                     {"0", "0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0",},
                     {"0", "0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0",},
                     {"0", "0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0","0",},
