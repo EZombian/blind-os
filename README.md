@@ -1,3 +1,5 @@
+## WE'RE STILL DEVELOPING BLINDOS
+
 ## BlindOS
 ### About
 BlindOS is a console operating system with very basic functions and constantly being developed.
