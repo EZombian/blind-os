@@ -1,4 +1,5 @@
-## WE'RE STILL DEVELOPING BLINDOS
+### Note
+We'll start developing C++ version of BlindOS (without GameEngine)
 
 ## BlindOS
 ### About
